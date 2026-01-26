@@ -122,9 +122,14 @@ Conversely, Allee (2011) uses a time-series regression model, which makes use of
 
 | Reference | Valuation Model | Period | Earnings forecasts data |Long-term growth assumption |
 |------:|:-----:|:------|------:|------:|
-| Malkiel (1979)     | DDM     | 1966-1977     | Value Line     |Value Line/GDP growth rate     |
-| 1     | 2     | 3     | 4     |4     |
-
+| Malkiel (1979)     | DDM     | 1966-1977     | Value Line     | Value Line/GDP growth rate |
+| Harris (1986)     | DDM     | 1982-1984     | IBES     | Long-term growth forecasts from IBES |
+| Gordon and Gordon (1997)    | DDM     | 1985-1991     | IBES     | Long-term growth forecasts from IBES |
+| Botosan and Plumlee (2002)    | DDM     | 1986-2000    | Value Line     | Use of target price from Value Line |
+| Pastor et al. (2008)    | DDM     | 1981-2002    | IBES     | Growth after year 15 is value irrelevant |
+| Claus and Thomas (2001)    | RIM     | 1985-1998    | IBES     | Risk-free rate minus three percent |
+| Gebhardt et al. (2001)  | RIM     | 1979-1995    | IBES     | Median industry ROE |
+| Easton (2004)  | AEG     | 1981-1999    | IBES     | No growth in abnormal earnings |
 
 ### Key Takeaways
 
