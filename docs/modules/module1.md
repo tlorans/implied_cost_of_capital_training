@@ -130,6 +130,13 @@ Conversely, Allee (2011) uses a time-series regression model, which makes use of
 | Claus and Thomas (2001)    | RIM     | 1985-1998    | IBES     | Risk-free rate minus three percent |
 | Gebhardt et al. (2001)  | RIM     | 1979-1995    | IBES     | Median industry ROE |
 | Easton (2004)  | AEG     | 1981-1999    | IBES     | No growth in abnormal earnings |
+| Ohlson and Juettner-Nauroth (2005)  | AEG     | 1984-1998    | IBES     | Risk-free rate minus three percent |
+| Easton et al. (2002)  | RIM     | 1981-1998    | IBES     | Estimated simultaneously with the ICC |
+| Ashton and Wang (2013)  | RIM     | 1975-2006    | IBES     | Estimated simultaneously with the ICC |
+| Nekrasov and Ogneva (2011)  | RIM     | 1980-2007    | IBES     | Estimated simultaneously with the ICC |
+| Allee (2011)  | AEG     | 1981-2010    | Time-series model     | No growth in abnormal earnings |
+| Hou et al. (2012)  | DDM, RIM, AEG     | 1968-2008    | Cross-sectional model     | According to the respective valuation model |
+| Li and Mohanram (2014)  | RIM, AEG     | 1969-2012    | EP and RI model    | According to the respective valuation model |
 
 ### Key Takeaways
 
@@ -143,15 +150,46 @@ Always validate your assumptions about growth rates - they significantly impact 
 
 ## Studies Using the Implied Cost of Capital
 
+Cost of capital estimates based on historical data contain a large amount of statistical noise (Fama and French, 1997, Elton 1999), which makes it difficult to uncover relationships in a regression setting. In contrast, ICC estimates are about an order of magnitude less volatile (Lee et al. 2009). Thus, many researchers have used the ICC to study influences on the cost of capital. The following provides an overview of many influential studies in this field.
+
 ### Impact of corporate governance and disclosure policies on the cost of capital
+
+One stream of literature investigates the impact of corporate governance and disclosure policies on the cost of capital. Botosan (1997) finds that an increase in voluntary disclosure levels lowers the cost of capital for manufacturing firms with little analyst following in the U.S. In a follow-up study, Botosan and Plumlee (2002) examine annual report disclosure levels and report a decrease in the cost of capital for higher disclosure levels. Francis et al. (2005) extends the previous work by looking at disclosure levels and cost of capital around the world. They find that a greater disclosure level leads to a lower cost of capital. Asbaugh-Skaife et al. (2009) link a firm's internal control deficiencies to higher costs of capital. 
+
+On a country-level, Hail and Leuz (2006) look at disclosure requirements as well as securities regulation and enforcement thereof and find that firms in countries with stricter requirements and regulation benefit from a lower cost of capital. 
+Furthermore, the same authors show that international firms that cross-list on the U.S. stock market experience a decrease in their cost of capital (Hail and Leuz, 2009). 
 
 ### Other accounting and corporate finance settings
 
+The ICC has also been employed in various other accounting and corporate finance settings. Dhaliwal et al. (2005) find that the ICC increases in the dividend tax. Francis et al. (2004) investigate several attributes of earnings, such as accrual quality, persistence and smoothness, and link them to the cost of capital. They find that, overall, more favorable values in these attributes correspond to a lower cost of capital. Hribar and Jenkins (2004) link accounting restatements to higher costs of capital. 
+
+More recent studies show how corporate diversification can lower the cost of capital (Hann et al., 2013) and how having more illiquid real assets increases the cost of capital (Ortiz-Molina and Phillips 2014). 
+
+Frank and Shen (2016) revisit the relationship between the cost of captal and investment using the ICC instead of the CAPM as a proxy for the cost of capital and find that firms with high cost of capital invest less.
+
 ### Trade-off between expected returns and risk
+
+Another stream of literature focuses on the trade-off between expected returns and risk. Pastor et al. (2008) show that the ICC is positively related to risk under reasonable assumptions. Chava and Purnanadam (2010) find that, when using the ICC instead of an expected return proxy based on historical data, default risk is positively related to the expected return. 
+
+The study by Botosan et al. (2011) investigates the relation between different ICC estimates and various risk proxies, namely unlevered beta, leverage (measured as long-term debt over market value of equity), natural logarithm of the market value of equity, natural logarithm of the book-to-price ratio, and expected earnings growth. They document that only some ICC measures show the expected association with all of these risk proxies.
 
 ### Asset pricing
 
+Contrary t the large body of literature in accounting and corporate finance, the ICC approach has been less frequently used in asset pricing. Notable expections are Lee et al. (2009), Li et al. (2013), Li et al. (2014), Tang et al. (2014) and Cooper and Sarkar (2016). 
+
+Lee et al. (2009) find that the ICC is positively related to world market beta, idiosyncratic risk, financial leverage, and book-to-market ratios, and negatively related to currency beta and firm size.
+
+Li et al. (2013) show that in the U.S., the market ICC is a strong predictor of future excess market returns. They run a predictive regression model with the excess market return as dependent variable and different forecasting variables (including the ICC) as the independent variables. For the out-of-sample tests, the researchers divide the sample into an estimation period and a forecasting period. First, they run the predictive regression using only the estimation period. They save the resulting coefficients and use them together with the current value of the respective predictor variable to calculate a forecast for the first month of the forecastign period. Then they roll the estimation period one month forward and forecast the market return for the second month of the forecasting period. This is repeated until the last month of the forecasting period. The evaluation of the different predictive variables is performed with the out-of-sample $R^2$ statistic. The authors find that the ICC outperforms the other tested variables which include dividend yield, earnings yield, book-to-market value, term spread, default spread, Treasury bill rate and 30-year treasury yield.
+
+Cooper and Sarkar (2016) test the ICC's predictive power in eleven countries and find that it outperforms the dividend yield. 
+
+Li et al. (2014) compute the ICC for a portfolio of value and growth stocks and term the spread between the ICC estimate of those two portfolios the implied value premium. They continue to show that in the U.S., the implied value premium is a strong predictor for the realized value premium for forecasts periods between one and 36 months.
+
+The study by Tang et al. (2014) tests whether asset pricing anomalies are also present when using the ICC instead of mean historic returns. The researchers aggregate the stock level ICC estimate to a portfolio level for long-short dollar-neutral investments. For many anomalies, the results are different when compared to the ones based on realized returns. Accruals and investment anomalies turn insignificant ex-ante suggesting that these anomalies are driven by unexpected returns. For the momentum factor (Jegadeesh and Titman, 1993), the long-short portfolio's expected return is even significantly negative (instead of significantly positive). The authors confirm the findings from realized return for the size (Banz, 1981) and value factor (Fama and French 1992).
+
 ### Investment strategies
+
+The more practitioner-oriented work by Esterer and Schröder (2014) studies investment strategies using the ICC. Specifically, the authors sort companies into quintiles according to their ICC estimate and analyze the subsequent portfolio returns. Before transaction costs, the highest ICC quintile portfolio outperforms the lowest quintile portfolio based on double portfolio sorts (size, book-to-market, and momentum). This finding is confirmed in time-series regressions with factor mimicking portfolios built on market, size, value and momentum factors. However, the outperformance turns insignificant when taking tansaction costs into account.
 
 ### Key Takeaways
 
