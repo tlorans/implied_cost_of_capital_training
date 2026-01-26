@@ -1,4 +1,4 @@
-# ICC Methodology
+# Corporate Finance Study with ICC
 
 This module covers advanced applications and considerations.
 

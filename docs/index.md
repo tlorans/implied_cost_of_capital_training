@@ -11,7 +11,9 @@ This course covers fundamental concepts and practical applications of implied co
 introduction
 modules/module1
 modules/module2
-exercises/exercises
+modules/module3
+modules/module4
+modules/module5
 ```
 
 ## Course Overview

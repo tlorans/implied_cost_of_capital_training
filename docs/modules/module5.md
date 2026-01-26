@@ -1,4 +1,4 @@
-# ICC Methodology
+# In Search of the True Greenium with ICC
 
 This module covers advanced applications and considerations.
 
