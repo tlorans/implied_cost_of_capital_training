@@ -1,65 +1,15 @@
-# Module 1: Fundamentals
+# Getting Started
 
 This module covers the fundamental concepts of implied cost of capital.
 
-## Learning Objectives
+## Motivation and Outline 
 
-By the end of this module, you will be able to:
+Expected return estimates are used in many asset pricing and corporate finance studies. These applications cover diverse areas, from portfolio allocation problems (Markowitz, 1952) through factor timing (Li et al., 2014) to studying variables that influence the expected return (for example, Botosan, 1997) or variables that are influenced by the expected return (for example, Frank and Shen, 2016). 
 
-* Define test helo
-* Understand the different models used
-* Apply basic calculations
+Since the epxected return is such a central topic in finance, there is a large variety of theories and models that attempt to explain it (see Cochrane, 2011, for a summary). These include macroeconomic theories (modelling parts of the economy, such as consumption and aggregate risk, and general equilibrium models), nehavorial finance models, and factor models. 
 
-## Topics Covered
+Despite this wide range of models, the methodology used in most applied finance research settings, as well as in practice, is based on historic stock returns.
 
-### Basic Models
-
-The most common models for calculating implied cost of capital include:
-
-#### 1. Dividend Discount Model (DDM)
-
-The Gordon Growth Model is a simplified version:
-
-$$r = \frac{D_1}{P_0} + g$$
-
-Where:
-
-* $r$ = required rate of return (cost of equity)
-* $D_1$ = expected dividend next year
-* $P_0$ = current stock price
-* $g$ = constant growth rate
-
-#### 2. Residual Income Model
-
-(Add content here)
-
-#### 3. Abnormal Earnings Growth Model
-
-(Add content here)
-
-## Practical Example
-
-Let's walk through a simple example...
-
-```python
-def calculate_gordon_growth_icc(dividend, price, growth_rate):
-    """
-    Calculate ICC using Gordon Growth Model
-    
-    Args:
-        dividend: Expected dividend next year (D1)
-        price: Current stock price (P0)
-        growth_rate: Constant growth rate (g)
-    
-    Returns:
-        Required rate of return (r)
-    """
-    return (dividend / price) + growth_rate
-
-# Example calculation
-icc = calculate_gordon_growth_icc(2.0, 50.0, 0.05)
-print(f"Implied Cost of Capital: {icc:.2%}")  # Output: 9.00%
-```
 
 ## Key Takeaways
 

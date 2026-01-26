@@ -27,6 +27,30 @@ source_suffix = {
 # Set default start page
 master_doc = 'index'
 
+# -- MyST Parser configuration for math ---------------------------------------
+myst_enable_extensions = [
+    "dollarmath",  # Enable $...$ and $$...$$ for inline and block math
+    "amsmath",     # Enable advanced math environments
+    "deflist",     # Definition lists
+    "colon_fence", # Use ::: instead of ``` for directives
+]
+
+# -- MathJax configuration ----------------------------------------------------
+# Use MathJax 3 (latest version) for better rendering
+mathjax_path = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+mathjax3_config = {
+    'tex': {
+        'inlineMath': [['$', '$'], ['\\(', '\\)']],
+        'displayMath': [['$$', '$$'], ['\\[', '\\]']],
+        'processEscapes': True,
+        'processEnvironments': True,
+    },
+    'options': {
+        'ignoreHtmlClass': 'tex2jax_ignore',
+        'processHtmlClass': 'tex2jax_process',
+    },
+}
+
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
