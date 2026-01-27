@@ -34,13 +34,20 @@ Yet **expected returns are not observable**, so every empirical approach must pi
 
 There is no shortage of models that explain expected returns (Cochrane, 2011): macroeconomic models, behavioral theories, and factor models. But in practice, most applied work still relies on historical returns—either directly (sample averages) or indirectly (factor models estimated from past data).
 
+Historical approaches share a critical assumption: the future will look like the past. They treat realized returns as the best guide to future returns. This works well in stable environments, but can be problematic when:
+- risk premia vary over time (Pastor and Stambaugh, 2001),
+- firm characteristics change (growth firms mature, distressed firms recover),
+- market conditions shift (financial crises, regulatory changes).
+
+
 ### Historical mean returns
 
 A natural proxy is the sample mean of realized returns: 
 
 $$\hat{E}[R] = \frac{1}{N} \sum_{t=1}^{N} R_t$$
 
-It was long a standard recommendation in practice (Harris and Marston, 1992). But it comes with a practical drawback: the estimate can be dominated by noise, requiring long windows to become stable (Elton, 1999).
+It was long a standard recommendation in practice (Harris and Marston, 1992). The implicit assumption is that the average past return is the best forecast of future returns. But this estimate can be dominated by noise, requiring long windows to become stable (Elton, 1999).
+
 
 ```python
 # 1) download prices
@@ -49,13 +56,13 @@ It was long a standard recommendation in practice (Harris and Marston, 1992). Bu
 ```
 ### Factor models
 
-Factor models impose structure: expected returns are tied to exposures to a small set of systematic risks. The CAPM is the canonical example (Sharpe, 1964; Lintner, 1965; Mossin, 1966): the only priced risk is the market excess return, and the key object is beta, typically estimated from historical return regressions:
+Factor models impose structure: expected returns are tied to exposures to a small set of systematic risks. The CAPM is the canonical example (Sharpe, 1964; Lintner, 1965; Mossin, 1966): 
 
 $$E[R_i] = R_f + \beta_i (E[R_m] - R_f)$$
 
 where $\beta_i = \frac{Cov(R_i, R_m)}{Var(R_m)}$.
 
-Factor models can reduce some measurement error relative to individual mean returns, but they still depend on historical estimation (betas, factor premia), and results are sensitive to implementation choices. Despite these issues, the CAPM remains a widely taught benchmark (e.g., Berk and DeMarzo, 2013).
+Factor models can reduce some measurement error relative to individual mean returns, but they remain backward-looking: betas and factor premia are estimated from historical data, implicitly assuming that past covariances and risk premia will persist. Results are sensitive to estimation windows and to whether the factor structure itself is stable over time. Despite these issues, the CAPM remains a widely taught benchmark (e.g., Berk and DeMarzo, 2013).
 
 ```python 
 # 1) estimate beta via regression
@@ -66,7 +73,7 @@ Empirical asset pricing introduced additional factors—size (Banz, 1981), value
 
 $$E[R_i] = R_f + \beta_{i,m}(E[R_m] - R_f) + \beta_{i,SMB}E[SMB] + \beta_{i,HML}E[HML] + ... $$
 
-These models are powerful in many applications, yet expected return estimates can remain noisy even in multi-factor settings (Fama and French, 1997).
+These models are powerful in many applications, yet expected return estimates can remain noisy even in multi-factor settings (Fama and French, 1997). Moreover, they still rely on the assumption that historical factor exposures and premia are informative about the future.
 
 ```python 
 # 1) load factor returns
@@ -76,11 +83,11 @@ These models are powerful in many applications, yet expected return estimates ca
 
 ## A Forward-looking alternative: Implied Cost of Capital (ICC)
 
+Historical-return approaches estimate expected returns from the time series of realized returns, implicitly assuming that the past is a good guide to the future. ICC flips the direction. Instead of looking backward, ICC looks forward: we infer the discount rate that makes today's price consistent with current expectations of future payoffs (typically from analyst forecasts or forecast models).
 
-Historical-return approaches estimate expected returns from the time series of realized returns. ICC flips the direction. Instead of estimating expected returns from past returns, we infer the discount rate that makes today’s price consistent with expected future payoffs.
+This is the "reverse valuation" idea that underlies ICC methods such as Gebhardt et al. (2001), Claus and Thomas (2001), Easton (2004), and Ohlson and Juettner-Nauroth (2005).
 
-This is the “reverse valuation” idea that underlies ICC methods such as Gebhardt et al. (2001), Claus and Thomas (2001), Easton (2004), and Ohlson and Juettner-Nauroth (2005).
-
+A useful way to understand ICC is through the "discount-rate variation" view of stock prices. Shiller (1981) argues that prices fluctuate too much to be justified by dividend changes alone, which implies that discount rates must vary over time. This view fits naturally with the return predictability literature and with approaches that try to infer discount rates from current prices rather than from past returns.
 
 ### ICC in one equation 
 
@@ -141,9 +148,6 @@ RIM vs AEG: “valuation hook” comparison
 ```
 
 ### Refinements and extensions in the literature
-
-We now turn to several refinements and extensions proposed in the ICC literature.
-These focus on (i) reducing reliance on long-run growth assumptions, (ii) adapting methods for higher-frequency estimation, (iii) addressing forecast errors and analyst bias, and (iv) replacing analyst forecasts with model-based forecasts.
 
 #### The long-run growth problem
 
