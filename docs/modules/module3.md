@@ -1,4 +1,4 @@
-# Portfolio Construction with ICC
+# Earnings Forecasts
 
 This module covers advanced applications and considerations.
 
