@@ -48,12 +48,219 @@ $$\hat{E}[R] = \frac{1}{N} \sum_{t=1}^{N} R_t$$
 
 It was long a standard recommendation in practice ([Harris and Marston, 1992](https://www.jstor.org/stable/3665665)). The implicit assumption is that the average past return is the best forecast of future returns. But this estimate can be dominated by noise, requiring long windows to become stable ([Elton, 1999](https://onlinelibrary.wiley.com/doi/abs/10.1111/0022-1082.00144)).
 
+To illustrate the practical challenges of using historical mean returns, let's analyze Apple Inc. (AAPL) stock over the past 10 years. 
+
+We start by downloading historical prices and computing daily returns:
 
 ```python
-# 1) download prices
-# 2) compute returns
-# 3) compute sample mean + rolling mean
+import polars as pl 
+import yfinance as yf
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Download AAPL price data
+ticker = yf.Ticker("AAPL")
+prices = ticker.history(period="10y")  # Last 10 years of data
+
+# Convert to Polars DataFrame
+df = pl.DataFrame({
+    'date': prices.index,
+    'price': prices['Close'].values
+})
+
+# Compute returns
+df = df.with_columns([
+    (pl.col('price') / pl.col('price').shift(1) - 1).alias('return')
+])
+
+# Remove first row (NaN return)
+df = df.filter(pl.col('return').is_not_null())
+
+# Print summary statistics
+print(f"Mean return: {df['return'].mean():.4f}")
+print(f"Std dev: {df['return'].std():.4f}")
+print(f"Min return: {df['return'].min():.4f}")
+print(f"Max return: {df['return'].max():.4f}")
 ```
+
+The distribution of daily returns shows high variability. While we can compute a sample mean, individual returns vary widely around it:
+
+```python
+# Plot distribution of returns
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# Histogram
+axes[0].hist(df['return'].to_numpy(), bins=50, edgecolor='black', alpha=0.7)
+axes[0].axvline(df['return'].mean(), color='red', linestyle='--', 
+                linewidth=2, label=f'Mean: {df["return"].mean():.4f}')
+axes[0].set_xlabel('Daily Return')
+axes[0].set_ylabel('Frequency')
+axes[0].set_title('Distribution of AAPL Daily Returns')
+axes[0].legend()
+axes[0].grid(True, alpha=0.3)
+
+# Time series of returns
+axes[1].plot(df['date'].to_numpy(), df['return'].to_numpy(), 
+             linewidth=0.8, alpha=0.7)
+axes[1].axhline(0, color='black', linestyle='-', linewidth=0.5)
+axes[1].axhline(df['return'].mean(), color='red', linestyle='--', 
+                linewidth=2, label=f'Mean: {df["return"].mean():.4f}')
+axes[1].set_xlabel('Date')
+axes[1].set_ylabel('Daily Return')
+axes[1].set_title('AAPL Daily Returns Over Time')
+axes[1].legend()
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+```
+
+![AAPL Returns Distribution](figures/module1/aapl_returns_distribution.png)
+
+
+The estimated expected return depends heavily on which time window we choose. Rolling mean estimates show dramatic time variation:
+
+```python
+# Compute rolling mean returns with different window sizes
+window_sizes = [60, 126, 252, 504]  # ~3 months, 6 months, 1 year, 2 years
+
+df_rolling = df.select(['date', 'return'])
+
+for window in window_sizes:
+    df_rolling = df_rolling.with_columns([
+        pl.col('return').rolling_mean(window_size=window).alias(f'mean_{window}d')
+    ])
+
+# Annualize the rolling means (assuming 252 trading days per year)
+for window in window_sizes:
+    df_rolling = df_rolling.with_columns([
+        (pl.col(f'mean_{window}d') * 252).alias(f'annual_{window}d')
+    ])
+```
+
+Now, let's visualize how rolling mean estimates vary over time and across window sizes:
+
+```python
+# Plot rolling mean estimates
+fig, axes = plt.subplots(2, 1, figsize=(14, 10))
+
+# Panel 1: Rolling mean estimates over time
+for window in window_sizes:
+    label = f'{window} days (~{window//252} yr)' if window >= 252 else f'{window} days'
+    axes[0].plot(df_rolling['date'].to_numpy(), 
+                df_rolling[f'annual_{window}d'].to_numpy(),
+                label=label, alpha=0.7, linewidth=1.5)
+
+axes[0].axhline(df['return'].mean() * 252, color='black', linestyle='--', 
+               linewidth=2, label='Full sample mean')
+axes[0].set_xlabel('Date')
+axes[0].set_ylabel('Annualized Expected Return')
+axes[0].set_title('Rolling Mean Return Estimates: High Time Variation')
+axes[0].legend(loc='best')
+axes[0].grid(True, alpha=0.3)
+
+# Panel 2: Distribution of rolling mean estimates
+data_for_box = []
+labels_for_box = []
+
+for window in window_sizes:
+    valid_estimates = df_rolling[f'annual_{window}d'].drop_nulls().to_numpy()
+    data_for_box.append(valid_estimates)
+    labels_for_box.append(f'{window}d')
+
+bp = axes[1].boxplot(data_for_box, labels=labels_for_box, patch_artist=True)
+for patch in bp['boxes']:
+    patch.set_facecolor('lightblue')
+    patch.set_alpha(0.7)
+
+axes[1].axhline(df['return'].mean() * 252, color='red', linestyle='--', 
+               linewidth=2, label='Full sample mean')
+axes[1].set_xlabel('Rolling Window Size')
+axes[1].set_ylabel('Annualized Expected Return')
+axes[1].set_title('Distribution of Rolling Mean Estimates: Wide Dispersion')
+axes[1].legend()
+axes[1].grid(True, alpha=0.3, axis='y')
+
+plt.tight_layout()
+plt.savefig('figures/module1/aapl_rolling_mean_estimates.png', dpi=300, bbox_inches='tight')
+plt.show()
+```
+
+![AAPL Rolling Mean Estimates](figures/module1/aapl_rolling_mean_estimates.png)
+
+Rolling mean estimates fluctuate dramatically. Shorter windows (60 days) produce more volatile estimates, while longer windows (504 days) are smoother but still show substantial variation.
+
+If we need to estimate expected returns for a valuation on a specific date, which window should we choose? The answer is unclear, and different choices lead to vastly different discount rates.
+
+Annual returns show dramatic year-to-year swings, suggesting that risk premia vary over time:
+
+```python
+# Extract year from date and compute annual averages
+df_annual = df.with_columns([
+    pl.col('date').dt.year().alias('year')
+])
+
+annual_stats = df_annual.group_by('year').agg([
+    pl.col('return').mean().alias('mean_return'),
+    pl.col('return').std().alias('std_return'),
+    pl.col('return').count().alias('n_obs')
+]).sort('year')
+
+# Annualize the returns
+annual_stats = annual_stats.with_columns([
+    (pl.col('mean_return') * 252).alias('annual_return'),
+    (pl.col('std_return') * np.sqrt(252)).alias('annual_volatility')
+])
+
+# Plot annual returns
+fig, axes = plt.subplots(2, 1, figsize=(14, 10))
+
+# Panel 1: Bar chart of annual returns
+years = annual_stats['year'].to_numpy()
+returns = annual_stats['annual_return'].to_numpy()
+colors = ['green' if r > 0 else 'red' for r in returns]
+
+axes[0].bar(years, returns, color=colors, alpha=0.7, edgecolor='black')
+axes[0].axhline(df['return'].mean() * 252, color='blue', linestyle='--', 
+               linewidth=2, label=f'Full sample mean: {df["return"].mean()*252:.2%}')
+axes[0].axhline(0, color='black', linestyle='-', linewidth=0.5)
+axes[0].set_xlabel('Year')
+axes[0].set_ylabel('Annualized Return')
+axes[0].set_title('Annual Average Returns: High Year-to-Year Variation')
+axes[0].legend()
+axes[0].grid(True, alpha=0.3, axis='y')
+
+# Panel 2: Volatility over time
+volatility = annual_stats['annual_volatility'].to_numpy()
+
+axes[1].plot(years, volatility, marker='o', linewidth=2, markersize=8, color='purple')
+axes[1].axhline(volatility.mean(), color='orange', linestyle='--', 
+               linewidth=2, label=f'Average volatility: {volatility.mean():.2%}')
+axes[1].set_xlabel('Year')
+axes[1].set_ylabel('Annualized Volatility')
+axes[1].set_title('Volatility Also Varies Through Time')
+axes[1].legend()
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('figures/module1/aapl_annual_returns_volatility.png', dpi=300, bbox_inches='tight')
+plt.show()
+```
+
+![AAPL Annual Returns and Volatility](figures/module1/aapl_annual_returns_volatility.png)
+
+The top panel shows that some years have returns above 50% while others are negative. The full-sample mean (blue dashed line) is not particularly representative of any individual year. The bottom panel shows that volatility also varies substantially through time, further complicating the estimation problem.
+
+This tutorial demonstrates three fundamental problems with using historical mean returns as a proxy for expected returns:
+
+1. **Estimation instability**: Different time windows produce dramatically different estimates. There's no clear criterion for choosing the "right" window.
+
+2. **Wide confidence intervals**: Even with 10 years of daily data (2500+ observations), standard errors remain large. For individual stocks, 95% confidence intervals easily span 20-30 percentage points.
+
+3. **Time-varying risk premia**: If expected returns change over time (as suggested by the rolling mean patterns and year-to-year variation), then using a long-run average is incorrect—it's an average of many different expected returns, not an estimate of the current one.
+
+
+
 ### Factor models
 
 Factor models impose structure: expected returns are tied to exposures to a small set of systematic risks. The CAPM is the canonical example (Sharpe, 1964; Lintner, 1965; Mossin, 1966): 
