@@ -12,7 +12,7 @@ Expected returns represent the compensation investors demand for bearing risk an
 
 - **Valuation:** They serve as the discount rate to convert expected future cash flows into present value.
 - **Capital budgeting:** Firms use them as hurdle rates to evaluate whether projects create shareholder value.
-- **Portfolio optimization:** Investors use them to construct efficient portfolios that maximize return for a given level of risk (Markowitz, 1952).
+- **Portfolio optimization:** Investors use them to construct efficient portfolios that maximize return for a given level of risk ([Markowitz, 1952](https://onlinelibrary.wiley.com/doi/10.1111/j.1540-6261.1952.tb01525.x)).
 
 Gross returns are defined as: 
 
@@ -28,14 +28,14 @@ $$P_t = E_t\left[\sum_{s=1}^{\infty} \frac{X_{t+s}}{(1 + r_e)^s}\right]$$
 
 where $X_{t+s}$ are the expected future cash flows to equity (e.g., dividends, earnings, residual income) and $r_e$ is the cost of equity (or expected return).
 
-Yet **expected returns are not observable**, so every empirical approach must pick a proxy. In the following sections, we discuss two common historical approaches.
+Yet **expected returns are not observable**, so every empirical approach must pick a proxy. In the following sections, we discuss two common backward-looking approaches based on historical returns, then introduce ICC as a forward-looking alternative.
 
-## Two common historical approaches
+## Two common backward-looking approaches
 
-There is no shortage of models that explain expected returns (Cochrane, 2011): macroeconomic models, behavioral theories, and factor models. But in practice, most applied work still relies on historical returns—either directly (sample averages) or indirectly (factor models estimated from past data).
+There is no shortage of models that explain expected returns ([Cochrane, 2011](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1540-6261.2011.01671.x)): macroeconomic models, behavioral theories, and factor models. But in practice, most applied work still relies on historical returns—either directly (sample averages) or indirectly (factor models estimated from past data).
 
 Historical approaches share a critical assumption: the future will look like the past. They treat realized returns as the best guide to future returns. This works well in stable environments, but can be problematic when:
-- risk premia vary over time (Pastor and Stambaugh, 2001),
+- risk premia vary over time ([Pastor and Stambaugh, 2001](https://www.jstor.org/stable/2697794)),
 - firm characteristics change (growth firms mature, distressed firms recover),
 - market conditions shift (financial crises, regulatory changes).
 
@@ -46,7 +46,7 @@ A natural proxy is the sample mean of realized returns:
 
 $$\hat{E}[R] = \frac{1}{N} \sum_{t=1}^{N} R_t$$
 
-It was long a standard recommendation in practice (Harris and Marston, 1992). The implicit assumption is that the average past return is the best forecast of future returns. But this estimate can be dominated by noise, requiring long windows to become stable (Elton, 1999).
+It was long a standard recommendation in practice ([Harris and Marston, 1992](https://www.jstor.org/stable/3665665)). The implicit assumption is that the average past return is the best forecast of future returns. But this estimate can be dominated by noise, requiring long windows to become stable ([Elton, 1999](https://onlinelibrary.wiley.com/doi/abs/10.1111/0022-1082.00144)).
 
 
 ```python
@@ -58,9 +58,9 @@ It was long a standard recommendation in practice (Harris and Marston, 1992). Th
 
 Factor models impose structure: expected returns are tied to exposures to a small set of systematic risks. The CAPM is the canonical example (Sharpe, 1964; Lintner, 1965; Mossin, 1966): 
 
-$$E[R_i] = R_f + \beta_i (E[R_m] - R_f)$$
+$$E[R_i] = R_f + \beta_i (R_m - R_f)$$
 
-where $\beta_i = \frac{Cov(R_i, R_m)}{Var(R_m)}$.
+where $\beta_i = \frac{Cov(R_i, R_m)}{Var(R_m)}$, $R_f$ is the risk-free rate, and $R_m$ is the market return. The CAPM says that a stock's expected return depends only on its market beta.
 
 Factor models can reduce some measurement error relative to individual mean returns, but they remain backward-looking: betas and factor premia are estimated from historical data, implicitly assuming that past covariances and risk premia will persist. Results are sensitive to estimation windows and to whether the factor structure itself is stable over time. Despite these issues, the CAPM remains a widely taught benchmark (e.g., Berk and DeMarzo, 2013).
 
@@ -89,13 +89,13 @@ This is the "reverse valuation" idea that underlies ICC methods such as Gebhardt
 
 A useful way to understand ICC is through the "discount-rate variation" view of stock prices. Shiller (1981) argues that prices fluctuate too much to be justified by dividend changes alone, which implies that discount rates must vary over time. This view fits naturally with the return predictability literature and with approaches that try to infer discount rates from current prices rather than from past returns.
 
-### ICC in one equation 
-
-Most ICC methods start from a valuation identity with price on the left-hand side and discounted expected payoffs on the right-hand side, then solve for $r$:
+ICC methods start from a valuation identity with price on the left-hand side and discounted expected payoffs on the right-hand side, then solve for $r$:
 
 $$P_t = E_t\left[\sum_{s=1}^{\infty} \frac{X_{t+s}}{(1 + r)^s}\right]$$
 
-where $X_t$ could be dividends, earnings, residual income, or abnormal earnings growth, depending on the model. The unknown $r$ is the implied cost of equity. ICC methods differ less in “philosophy” than in the choice of (i) the payoff definition $X_t$ and (ii) the terminal value / long-run assumptions.
+where $X_t$ could be dividends, earnings, residual income, or abnormal earnings growth, depending on the model. The unknown $r$ is the implied cost of equity. ICC methods differ in the choice of (i) the payoff definition $X_t$ and (ii) the terminal value / long-run assumptions.
+
+Dividend Discount Models (DDM) use dividends as payoffs, while Clean Surplus Accounting models use earnings and book values to restate the valuation identity. We discuss both families below.
 
 ### Dividend Discount models (DDM)
 DDM methods forecast dividends (or payout ratios) and impose assumptions about long-run growth.
@@ -179,6 +179,87 @@ AEG can be easier to implement when:
 This motivates models that are often easier to operationalize with accounting data:
 - **Residual Income Model (RIM):** Gebhardt et al. (2001) forecast ROE explicitly for a few years, then transition ROE toward an industry benchmark. Claus and Thomas (2001) use market-level ICC with explicit forecast structure and a long-run residual income growth assumption tied to inflation.
 - **Abnormal Earnings Growth (AEG):** Easton (2004) assumes no growth in abnormal earnings beyond the short-term forecast horizon. Ohlson and Juettner-Nauroth (2005) allow for short-term and long-term growth rates that differ, with the long-term rate anchored to risk-free rate minus a premium.
+
+
+### Testing ICC implementations
+
+ICC estimates are generally evaluated based on their association with realized returns. A good ICC measure should be positively correlated with future realized returns, since higher expected returns should lead to higher realized returns on average. However, this relationship is inherently noisy because:
+- realized returns contain both expected and unexpected components,
+- the unexpected component (return shocks) can dominate over short horizons,
+- even if ICC is correct on average, individual firms experience idiosyncratic shocks.
+
+The most common validation approach is the **portfolio sort test**. The logic is straightforward: if ICC correctly measures expected returns, then stocks with higher ICC should earn higher realized returns on average.
+
+**Step-by-step procedure:**
+1. **At each time period $t$ (e.g., monthly):** Compute ICC for all available stocks using current prices and forecasts.
+2. **Sort stocks into portfolios:** Rank stocks by their ICC estimate and form portfolios (typically 5 quintiles or 10 deciles). Portfolio 1 contains stocks with the lowest ICC, Portfolio 5 (or 10) contains stocks with the highest ICC.
+3. **Hold and measure returns:** Hold each portfolio for a fixed horizon (e.g., 1 month, 1 quarter, or 1 year) and compute the realized return:
+   - Equal-weighted: $R_{p,t+1} = \frac{1}{N_p} \sum_{i \in p} R_{i,t+1}$
+   - Value-weighted: $R_{p,t+1} = \sum_{i \in p} w_{i,t} R_{i,t+1}$ where $w_{i,t} = \frac{ME_{i,t}}{\sum_{j \in p} ME_{j,t}}$
+4. **Rebalance:** At time $t+1$, re-sort all stocks based on updated ICC estimates and reform portfolios.
+5. **Test for monotonicity:** Examine whether average realized returns increase monotonically across portfolios:
+   $$\bar{R}_1 < \bar{R}_2 < ... < \bar{R}_5$$
+   
+   The key test is whether the high-minus-low (HML) portfolio earns a positive return:
+   $$\bar{R}_{5} - \bar{R}_{1} > 0$$
+   
+   with statistical significance assessed using a t-statistic.
+
+**Key findings from the literature:**
+- **Gebhardt et al. (2001):** Find monotonic relation between ICC quintiles and 1-year-ahead realized returns. The high-minus-low portfolio earns approximately 7-8% per year.
+
+- **Claus and Thomas (2001):** Show that market-level ICC (value-weighted average across all stocks) predicts aggregate market returns at annual horizons.
+
+- **Lee et al. (2009):** Compare multiple ICC measures and find that most exhibit positive association with future returns, though the strength varies. Some measures show stronger monotonicity than others.
+
+**Practical considerations:**
+- **Holding period:** Longer horizons (1 year) typically show clearer patterns than shorter horizons (1 month) because noise averages out. However, longer horizons mean fewer independent observations.
+
+- **Weighting scheme:** Equal-weighting gives more influence to small stocks; value-weighting reflects the investable market but can be dominated by large firms.
+
+- **Data requirements:** The test requires sufficient firms in each portfolio at each time period. Studies typically restrict to firms with non-missing ICC, which can induce survivorship bias.
+
+- **Transaction costs:** Frequent rebalancing (monthly) can erode returns in practice. Annual rebalancing is more realistic but reduces the number of observations.
+
+```python
+# Pseudo-code for portfolio sort test
+
+# Step 1: Estimate ICC for all stocks at month t
+icc_df = compute_icc(prices, forecasts, book_values, date=t)
+
+# Step 2: Sort stocks into quintiles based on ICC
+icc_df['quintile'] = pd.qcut(icc_df['icc'], q=5, labels=[1, 2, 3, 4, 5])
+
+# Step 3: Form portfolios and compute returns
+for quintile in [1, 2, 3, 4, 5]:
+    portfolio_stocks = icc_df[icc_df['quintile'] == quintile]
+    
+    # Equal-weighted return
+    ew_return = portfolio_stocks['return_t+1'].mean()
+    
+    # Value-weighted return
+    portfolio_stocks['weight'] = portfolio_stocks['market_cap'] / portfolio_stocks['market_cap'].sum()
+    vw_return = (portfolio_stocks['return_t+1'] * portfolio_stocks['weight']).sum()
+
+# Step 4: Repeat for all time periods t = 1, 2, ..., T
+
+# Step 5: Test for monotonicity
+# Compute time-series average returns for each portfolio
+# Test whether R_5 - R_1 > 0 using t-test
+```
+
+**Interpretation challenges:**
+- **Ex-ante vs ex-post:** ICC is an ex-ante expected return measure, but we test it using ex-post realized returns. The two can diverge if:
+  - unexpected news arrives (earnings surprises, macroeconomic shocks),
+  - risk premia change over time,
+  - ICC contains measurement error.
+
+- **Power of the test:** Standard errors of portfolio returns are large, so tests have limited power to detect modest differences in expected returns. Typical annual return differences of 5-10% may not be statistically significant over 20-30 years of data.
+
+- **Alternative explanations:** A positive ICC-return relation could reflect:
+  - correct measurement of time-varying expected returns (the intended interpretation),
+  - omitted risk factors that ICC happens to correlate with,
+  - mispricing that ICC-based strategies exploit.
 
 ### Refinements and extensions in the literature
 

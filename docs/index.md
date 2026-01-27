@@ -12,6 +12,7 @@ introduction
 modules/module1
 modules/module2
 modules/module3
+modules/module4
 ```
 
 ## Course Overview
