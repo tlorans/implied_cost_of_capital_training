@@ -123,29 +123,62 @@ Sensitivity plot: long-run growth vs ICC
 ```
 
 ### Clean surplus accounting and earnings-based models
-When dividends are irregular or absent (common in modern equity markets), clean surplus accounting provides an alternative. The dividend discount model can be restated in terms of earnings and book values (Ohlson, 1995):
 
-$$P_t = B_t + E_t\left[\sum_{s=1}^{\infty} \frac{E_{t+s} - r B_{t+s-1}}{(1 + r)^s}\right]$$
+When dividends are irregular or absent (common in modern equity markets), clean surplus accounting provides an alternative. 
 
-where $B_t$ is the book value of equity at time $t$, and $E_{t+s}$ are expected earnings. The clean surplus identity states that changes in book value equal earnings minus dividends:
+```python
+# show big part of firms pay no dividends
+```
+
+The key insight is that we can restate the dividend discount model in terms of earnings and book values using the **clean surplus relation** (Ohlson, 1995):
 
 $$B_{t} = B_{t-1} + E_{t} - D_{t}$$
 
+where $B_t$ is the book value of equity at time $t$, $E_t$ are earnings, and $D_t$ are dividends. This identity states that changes in book value equal earnings minus dividends (assuming no capital transactions or "dirty surplus" items).
 
+#### From dividends to residual income
+
+Starting from the dividend discount model:
+
+$$P_t = \sum_{s=1}^{\infty} \frac{E_t[D_{t+s}]}{(1+r)^s}$$
+
+We can substitute the clean surplus relation $D_{t+s} = E_{t+s} - (B_{t+s} - B_{t+s-1})$ into the DDM and rearrange terms. After telescoping the book value terms, we obtain the **Residual Income Model (RIM)**:
+
+$$P_t = B_t + \sum_{s=1}^{\infty} \frac{E_t[E_{t+s} - r \cdot B_{t+s-1}]}{(1+r)^s}$$
+
+The term $RI_{t+s} = E_{t+s} - r \cdot B_{t+s-1}$ is called **residual income** (or economic profit): it represents earnings in excess of the capital charge. The RIM says that value equals book value plus the present value of expected future residual income.
+
+RIM is often more stable than DDM because:
+- It anchors on book value (which is observable and relatively stable),
+- Residual income tends to mean-revert toward zero faster than dividends or earnings levels,
+- It works for firms that pay irregular or zero dividends.
+
+#### From residual income to abnormal earnings growth
+
+The **Abnormal Earnings Growth (AEG)** model is an alternative transformation that anchors on capitalized earnings rather than book value. Starting from the RIM, we can show (through algebraic manipulation involving the clean surplus relation) that:
+
+$$P_t = \frac{E_{t+1}}{r} + \sum_{s=1}^{\infty} \frac{E_t[AEG_{t+s}]}{(1+r)^s}$$
+
+where abnormal earnings growth is defined as:
+
+$$AEG_{t+s} = E_{t+s} - E_{t+s-1} - r \cdot (E_{t+s-1} - D_{t+s-1})$$
+
+or equivalently:
+
+$$AEG_{t+s} = E_{t+s} - (1+r) \cdot E_{t+s-1} + r \cdot D_{t+s-1}$$
+
+The AEG model says that value equals capitalized next-period earnings plus the present value of abnormal earnings growth.
+
+AEG can be easier to implement when:
+- Short-term earnings forecasts are more reliable than book value or ROE forecasts,
+- We want to avoid explicit book value tracking (useful for daily estimation),
+- Terminal value assumptions are naturally stated in terms of earnings growth stabilization.
+
+#### Practical implementations
 
 This motivates models that are often easier to operationalize with accounting data:
-- Residual Income Model (RIM): price equals book value plus discounted residual income; residual income depends on earnings minus $r$ times beginning book value (Kothari et al., 2016).
-- Gebhardt et al. (2001): forecast ROE explicitly for a few years, then transition ROE toward an industry benchmark.
-- Claus and Thomas (2001): market-level ICC with explicit forecast structure and a long-run residual income growth assumption tied to inflation.
-- Abnormal Earnings Growth (AEG): anchor value on capitalized earnings and adjust for abnormal earnings growth (Easton, 2004; Ohlson and Juettner-Nauroth, 2005).
-
-```python
-Figure placeholders
-
-Clean surplus identity diagram
-
-RIM vs AEG: “valuation hook” comparison
-```
+- **Residual Income Model (RIM):** Gebhardt et al. (2001) forecast ROE explicitly for a few years, then transition ROE toward an industry benchmark. Claus and Thomas (2001) use market-level ICC with explicit forecast structure and a long-run residual income growth assumption tied to inflation.
+- **Abnormal Earnings Growth (AEG):** Easton (2004) assumes no growth in abnormal earnings beyond the short-term forecast horizon. Ohlson and Juettner-Nauroth (2005) allow for short-term and long-term growth rates that differ, with the long-term rate anchored to risk-free rate minus a premium.
 
 ### Refinements and extensions in the literature
 
