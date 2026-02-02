@@ -1,18 +1,32 @@
 # Implied Cost of Capital Training
 
-Welcome to the Implied Cost of Capital Training Course!
+A reproducible Python tutorial. Based on Esterer & Schröder (2014), “Implied cost of capital investment strategies: evidence from international stock markets”
 
-This course covers fundamental concepts and practical applications of implied cost of capital calculations.
+## Purpose 
+
+- Explain what ICC is, why it matters, and what the reader will build. 
+- Emphasize replication+extension (not just explanation).
+
+## Key promises
+- Compute ICC from analyst forecasts
+- Build ICC-sorted portfolios
+- Test risk-adjusted performance
+- Understand transaction costs and implementatble strategies
+- Extend to international markets
+
 
 ```{toctree}
 :maxdepth: 2
 :caption: Contents
 
-introduction
 modules/module1
 modules/module2
 modules/module3
 modules/module4
+modules/module5
+modules/module6
+modules/module7
+modules/module8
 ```
 
 ## Course Overview
