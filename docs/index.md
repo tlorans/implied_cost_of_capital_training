@@ -34,6 +34,8 @@ modules/module12
 modules/module13
 modules/module14
 modules/module15
+modules/module16
+modules/module17
 ```
 
 ## Course Overview
