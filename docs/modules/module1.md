@@ -11,7 +11,7 @@ But they won't give you testable predictions. They won't tell you what should ha
 This course fixes that.
 
 We'll build a rigorous framework for testing mispricing claims. You'll learn:
-- How to extract expected return estimates from market prices using the implied cost of capital (ICC)
+- How to extract future return estimates from market prices using the implied cost of capital (ICC)
 - How to build earnings forecast models that might contain information the market misses
 - How to form portfolios and test whether your signals predict returns
 - How to distinguish risk from mispricing (these are not the same thing)
@@ -28,9 +28,8 @@ Walk into any asset management pitch these days. They'll tell you about market i
 
 The pitch always follows the same pattern:
 1. Here's a risk or factor the market supposedly misses
-2. Here's why it matters for future cash flows
+2. Here's a projection showing it will matters (by 2050, naturally)
 3. Here's our portfolio that exploits it
-4. Here's a projection showing it will work (by 2050, naturally)
 
 What's missing? Any way to check if they're right *before* 2050.
 
@@ -44,7 +43,7 @@ These are all testable. You can be proven wrong. That's the standard we're going
 
 Here's the most important conceptual distinction in this course: **risk and mispricing are not the same thing**.
 
-**Risk** means systematic exposure to factors that affect returns. In equilibrium, assets with more risk should earn higher returns. If you identify a risk factor, you should *buy* assets exposed to it (to earn the risk premium), not sell them.
+**Risk** (rewarded) means systematic exposure to factors that affect returns. In equilibrium, assets with more risk should earn higher returns. If you identify a risk factor, you should *buy* assets exposed to it (to earn the risk premium), not sell them.
 
 **Mispricing** means the market hasn't correctly valued future cash flows. If you identify mispricing, you should *sell* overvalued assets and *buy* undervalued assets to capture the correction.
 
@@ -62,7 +61,7 @@ This course will make you rigorous about the distinction. When you test a claim,
 
 We'll use three main tools to test for mispricing:
 
-**1. Implied Cost of Capital (ICC):** This is the discount rate that makes current prices equal to forecasted cash flows. It's just an IRR calculation. But it's useful because it summarizes market expectations in a single number.
+**1. Implied Cost of Capital (ICC):** This is the discount rate that makes current prices equal to forecasted cash flows. It's just an internal rate of return (IRR) calculation. But it's useful because it summarizes market expectations in a single number.
 
 If the market undervalues a stock, its ICC will be high (you need a high discount rate to justify the low price given the forecasts). If the market overvalues a stock, its ICC will be low. By sorting stocks on ICC and measuring returns, you can test whether the market systematically messes up.
 
@@ -72,7 +71,7 @@ If your model predicts earnings that differ from analyst forecasts, and if the m
 
 **3. Portfolio Formation and Return Decomposition:** The ultimate test is returns. If you claim high ICC stocks are undervalued, form a portfolio that goes long high ICC and short low ICC. Measure returns. If you're right, you make money. If you're wrong, you lose money.
 
-But don't stop there. Decompose when the returns happen. If it's mispricing, returns should concentrate at information events (earnings announcements, policy changes). If it's risk, returns should accrue steadily over time. This distinction—pioneered by Rusticus (2019)—is incredibly powerful.
+But don't stop there. Decompose when the returns happen. If it's mispricing, returns should concentrate at information events (earnings announcements, policy changes). If it's risk, returns should accrue steadily over time.
 
 ## The Application: Climate Risk
 
@@ -157,7 +156,7 @@ But that's fine. The goal is to think clearly about mispricing claims and test t
 
 You should have:
 - **Finance background:** Understand present value, risk and return, basic asset pricing. Know what CAPM is (even if you don't believe it works).
-- **Python skills:** Can write functions, use pandas, make plots. If you've done intro Python for data science, you're ready.
+- **Python skills:** Can write functions, use polars or pandas, make plots. If you've done intro Python for data science, you're ready.
 - **Statistics basics:** Understand regression, hypothesis testing, standard errors. We'll run tests and you need to interpret them.
 - **Skepticism:** Don't believe everything you read in academic papers or industry reports. Question assumptions. Demand evidence.
 
