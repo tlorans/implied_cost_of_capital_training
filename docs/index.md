@@ -1,6 +1,6 @@
 # Implied Cost of Capital Training
 
-A reproducible Python tutorial. Based on Esterer & Schröder (2014), “Implied cost of capital investment strategies: evidence from international stock markets”
+A reproducible Python tutorial.
 
 ## Purpose 
 
@@ -10,9 +10,6 @@ A reproducible Python tutorial. Based on Esterer & Schröder (2014), “Implied 
 ## Key promises
 - Compute ICC from analyst forecasts
 - Build ICC-sorted portfolios
-- Test risk-adjusted performance
-- Understand transaction costs and implementatble strategies
-- Extend to international markets
 
 
 ```{toctree}
@@ -27,15 +24,6 @@ modules/module5
 modules/module6
 modules/module7
 modules/module8
-modules/module9
-modules/module10
-modules/module11
-modules/module12
-modules/module13
-modules/module14
-modules/module15
-modules/module16
-modules/module17
 ```
 
 ## Course Overview
