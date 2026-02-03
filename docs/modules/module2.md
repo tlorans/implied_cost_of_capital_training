@@ -16,22 +16,22 @@ Simple enough. But what does this number actually mean? That question turns out 
 
 ## Two Very Different Questions
 
-Asset pricing and valuation ask fundamentally different questions, and it's crucial to keep them separate.
+We need to distinguish between two fundamentally different interpretations of returns, and it's crucial to keep them separate.
 
-**The asset pricing question:** Given the stock's risk, what return should I expect to earn in equilibrium? We use models—CAPM, Fama-French, whatever—to tell us:
+**The equilibrium required return:** Given the stock's risk, what return do investors demand in equilibrium? We use models—CAPM, Fama-French, whatever—to tell us:
 
 $$E[R] = R_f + \beta \times \text{risk premium}$$
 
-The logic: if you know the risk, you know the return. The price follows.
+The logic: if you know the risk, you know the required return. The price should adjust to deliver that return.
 
-**The valuation question:** Given the stock's price and some forecasts of cash flows, what return am I getting? This is the ICC calculation. 
-The logic runs backwards: if you know the price and the cash flows, you can back out the return.
+**The implied yield (ICC):** Given the stock's price and some forecasts of cash flows, what IRR am I getting? This is the ICC calculation. 
+The logic runs backwards: if you know the price and the cash flows, you can back out the internal rate of return.
 
-Now, if markets are efficient and everyone agrees on the cash flow forecasts, these two numbers should be the same. The ICC should equal the equilibrium expected return. That's the textbook story.
+Now, if markets are efficient and everyone agrees on the cash flow forecasts, these two numbers should be the same. The ICC (implied yield) should equal the equilibrium required return. That's the textbook story.
 
-But here's the problem: markets aren't always efficient, and people don't always agree on forecasts. So the ICC and the expected return can differ. Sometimes by a lot.
+But here's the problem: markets aren't always efficient, and people don't always agree on forecasts. So the ICC and the equilibrium required return can differ. Sometimes by a lot.
 
-## Why Expected and Implied Returns Diverge
+## Why Required and Implied Returns Diverge
 
 Let's be concrete about when and why these numbers come apart.
 
@@ -39,9 +39,9 @@ Let's be concrete about when and why these numbers come apart.
 
 $$\text{high price} = \sum CF_t / (1+r)^t$$
 
-so you get a low $r$. But the true expected return, accounting for an eventual correction, is higher. Conversely, if the stock is underpriced, the ICC is too high.
+so you get a low $r$. But the equilibrium required return, reflecting the asset's true risk, is higher. Conversely, if the stock is underpriced, the ICC is too high relative to the required return.
 
-The ICC does not know about mispricing. It takes the price as given and asks what return is baked into that price. It's a mechanical calculation, not an economic prediction.
+The ICC does not know about mispricing. It takes the price as given and asks what yield is baked into that price. It's a mechanical IRR calculation, not an equilibrium prediction.
 
 **Forecast errors.** Analysts are human. They make mistakes. More problematically, they make *systematic* mistakes. Analysts tend to be optimistic, especially about growth stocks. They're slow to cut forecasts when things go south. They herd.
 
@@ -55,39 +55,39 @@ The ICC picks up this variation. In a recession, risk premia rise, stock prices 
 
 Is that a bug or a feature? Depends what you're using it for. If you want a stable cost of capital for capital budgeting, time variation is a nuisance. If you're studying how risk premia move over time, it's exactly what you want.
 
-## Expected Return: A Thought Experiment
+## Required Return vs. Implied Yield: A Thought Experiment
 
-Think of it this way. You're considering buying a stock. You want to know: what return can I expect? 
+Think of it this way. You're considering buying a stock. You want to know: what return should this stock deliver given its risk? 
 
-The **asset pricing approach** says: look at the stock's beta (or whatever risk measures you believe in). Compare to other stocks with similar risk. That tells you the expected return in equilibrium. If the stock is priced correctly, you'll earn that return.
+The **equilibrium approach** says: look at the stock's beta (or whatever risk measures you believe in). Compare to other stocks with similar risk. That tells you the required return in equilibrium. If the stock is priced correctly, you'll earn that return.
 
-The **ICC approach** says: look at the current price and the analyst forecasts. Solve for the return that makes them consistent. That's the ICC.
+The **ICC approach** says: look at the current price and the analyst forecasts. Solve for the IRR that makes them consistent. That's the implied yield.
 
-These are different animals. The asset pricing approach makes a claim about equilibrium and risk. The ICC approach is agnostic—it just inverts the present value formula.
+These are different animals. The equilibrium approach makes a claim about what return investors demand given risk. The ICC approach is agnostic—it just inverts the present value formula to find the yield.
 
 When should they agree? When (1) markets are efficient, (2) everyone agrees on the forecasts, and (3) those forecasts are correct on average. Strong assumptions. Often violated.
 
 ## Connecting ICC to Value Investing
 
-The divergence between ICC and model-based expected returns is where things get interesting—and potentially profitable.
+The divergence between ICC (implied yield) and equilibrium required returns is where things get interesting—and potentially profitable.
 
-Suppose your asset pricing model says a stock should have an expected return of 10%. But the ICC, calculated from the current (depressed) price, is 15%. What's going on?
+Suppose your asset pricing model says a stock should have a required return of 10% given its risk. But the ICC, calculated from the current (depressed) price, is 15%. What's going on?
 
 Either the stock is mispriced (undervalued), or your model is wrong, or the analyst forecasts are too pessimistic. If you believe the first explanation, you have a potential value opportunity.
 
-Value investors love this. They're always looking for stocks where the implied return (ICC) exceeds the required return (expected return from models). That gap is the margin of safety, the potential alpha.
+Value investors love this. They're always looking for stocks where the implied yield (ICC) exceeds the required return. That gap is the margin of safety, the potential alpha.
 
-The same logic works in reverse. If the ICC is 6% but your model says expected returns are 10%, something's off. Maybe the stock is overpriced. Maybe the analyst forecasts are too rosy. Either way, be careful.
+The same logic works in reverse. If the ICC is 6% but your model says the required return is 10%, something's off. Maybe the stock is overpriced. Maybe the analyst forecasts are too rosy. Either way, be careful.
 
 ## What Should You Do With This?
 
-Here's my view. The ICC is not the expected return. It's an estimate of the return implied by prices and forecasts. It's useful precisely because it doesn't impose equilibrium assumptions.
+Here's my view. The ICC is not the equilibrium required return. It's an IRR—the yield implied by current prices and forecasts. It's useful precisely because it doesn't impose equilibrium assumptions.
 
 Use the ICC to:
 - **Measure market conditions.** When average ICC is high across stocks, the market is demanding high returns. Risk premia are elevated. That's useful information.
-- **Spot potential mispricings.** When ICC and model-based expected returns differ sharply, something interesting is happening. Investigate.
+- **Spot potential mispricings.** When ICC and model-based required returns differ sharply, something interesting is happening. Investigate.
 - **Estimate cost of capital forward-looking.** Historical average returns are noisy and backward-looking. The ICC uses current prices and forecasts. It's not perfect, but it's often better than the alternatives.
 
-But don't confuse the ICC with the true expected return. They're the same only under strong assumptions—assumptions that are often wrong.
+But don't confuse the ICC with the equilibrium required return. They're the same only under strong assumptions—assumptions that are often wrong.
 
 The ICC is an input to your analysis, not the final answer. Use it wisely.
