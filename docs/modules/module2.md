@@ -56,7 +56,7 @@ If it's mispricing, you do have an edge. You found a signal the market hasn't in
 
 So which is it?
 
-You can't tell from the ICC alone. The number is the same whether it's risk or mispricing. You need additional evidence. That's what the rest of this course is about.
+You can't tell from the ICC alone. The number is the same whether it's risk or mispricing. You need additional evidence.
 
 ## Evidence for Mispricing
 
@@ -87,7 +87,7 @@ What it measures depends on whether markets are efficient:
 - If markets are efficient and forecasts are shared, ICC = expected return = risk.
 - If markets misprice stocks or react slowly to information, ICC = expected return + mispricing signal.
 
-You don't get to choose which story is true. The market chooses. Your job is to figure out which world you're in, and then use ICC accordingly.
+You don't get to choose which story is true. The market chooses.
 
 Most of the evidence points toward the second story. Markets misprice stocks, especially around information events. ICC picks this up because it's mechanically backed out of prices. High ICC stocks tend to be undervalued. They outperform when the market corrects.
 
@@ -106,11 +106,5 @@ In the next module, we'll dig into exactly how to compute ICC using the residual
 Then we'll implement it. Get data. Write code. Handle all the messy details—missing values, negative earnings, convergence failures.
 
 After that: portfolio tests. Does ICC actually predict returns out of sample? How big are the spreads? Are they statistically and economically significant?
-
-Then: risk or mispricing? We'll use return decomposition to separate returns at earnings announcements from other returns. This tells us whether ICC is capturing information mispricing or just risk.
-
-Finally: build your own forecasts. Analysts are useful, but they make mistakes. Can you build a statistical model that forecasts earnings better—or at least differently? If yes, compute ICC with your forecasts instead of analysts'. Test whether it predicts returns even more strongly.
-
-All of this builds toward one goal: rigorous tests of mispricing claims. Climate, ESG, AI, whatever. The method is the same. Learn it once, apply it everywhere.
 
 Let's get started.

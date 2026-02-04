@@ -2,228 +2,172 @@
 
 ## What This Course Is About
 
-This course teaches you how to test whether markets are mispricing assets. Not with vague hand-waving about "inefficiency" or untestable claims about what will happen in 2050. With falsifiable hypotheses you can test with data today.
+Estimating expected returns is one of the fundamental problems in finance. The traditional approach uses historical data: compute realized returns over some period and hope they're representative of future expectations. But past returns are noisy, backward-looking, and may not reflect current market conditions or future prospects.
 
-Here's the basic problem. People claim markets misprice all sorts of things: climate risk, analyst forecasts, earnings quality, whatever the latest story is. They'll tell you which stocks to avoid and which to buy. They'll show you scary scenarios decades out. They'll charge you fees to manage your money based on these claims.
+Over the past two decades, researchers have developed an alternative: the implied cost of capital (ICC). Instead of looking backward at realized returns, ICC looks forward. It's rooted in valuation theory. Start with the premise that price equals the present value of expected cash flows. Take analysts' earnings forecasts as a proxy for expected cash flows. Combine them with observed market prices. Then solve for the discount rate that equates the two. That discount rate is ICC—an expected return measure derived from current prices and forward-looking forecasts.
 
-But they won't give you testable predictions. They won't tell you what should happen to returns *now* if their theory is right. They won't give you a way to prove them wrong.
+The appeal is obvious. ICC uses information that's forward-looking and market-based. It updates continuously as prices and forecasts change. Researchers have used it to estimate the equity risk premium, test asset pricing models, evaluate corporate investment decisions, and measure changes in required returns over time.
 
-This course fixes that.
+But ICC rests on valuation premises that may not hold. The approach assumes investors agree with analyst forecasts and that prices reflect fundamental values. If those assumptions fail—if analysts are systematically biased or if prices deviate from fundamentals—then ICC might not equal the true expected return.
 
-We'll build a rigorous framework for testing mispricing claims. You'll learn:
-- How to extract future return estimates from market prices using the implied cost of capital (ICC)
-- How to build earnings forecast models that might contain information the market misses
-- How to form portfolios and test whether your signals predict returns
-- How to distinguish risk from mispricing (these are not the same thing)
-- How to decompose returns to see when they actually materialize
-- How to apply all of this to test claims about climate risk
+Still, ICC gives us a way to estimate expected returns without relying solely on historical data. Whether it's better than alternatives is an empirical question. This course shows you how to compute ICC, understand what it measures, and evaluate whether it works as an expected return proxy.
 
-By the end, you'll have a complete toolkit for evaluating mispricing claims empirically. You'll implement everything in Python from scratch. And you'll understand the limitations—where these tests work and where they don't.
+Here's what you'll learn:
+- The valuation theory underlying ICC: residual income models, dividend discount models, and their connection to expected returns
+- How to compute ICC from analyst forecasts and market prices
+- Different ICC estimation methods and their assumptions
+- How ICC compares to historical return estimates as a measure of expected returns
+- The practical details: data sources, numerical methods, implementation choices
 
-Most importantly, you'll be able to cut through the nonsense. When someone tells you markets misprice climate risk or any other factor, you'll know how to test whether they're right.
+By the end, you'll have working Python code for computing ICC across stocks and over time. You'll understand the valuation premises behind ICC, what assumptions are required for it to measure expected returns, and how to evaluate those assumptions empirically. You'll see how ICC varies across firms and how it relates to realized returns.
 
-## The Problem: Claims Without Tests
+This is about measurement, not prediction. Can we use valuation models and analyst forecasts to construct reasonable expected return proxies? That's the question we'll answer.
 
-Walk into any asset management pitch these days. They'll tell you about market inefficiencies. Behavioral biases. Climate risk. ESG. AI disruption. Whatever sells.
+## The Economic Logic
 
-The pitch always follows the same pattern:
-1. Here's a risk or factor the market supposedly misses
-2. Here's a projection showing it will matters (by 2050, naturally)
-3. Here's our portfolio that exploits it
+The logic starts with valuation theory. Any valuation model says price equals the present value of expected cash flows, discounted at the expected return:
 
-What's missing? Any way to check if they're right *before* 2050.
+$$P_0 = \sum_{t=1}^{\infty} \frac{E[CF_t]}{(1+r)^t}$$
 
-This is not science. You can't falsify a 2050 prediction with 2026 data. You can make any claim you want, collect fees for decades, and retire before anyone can prove you wrong.
+This equation has three components: current price $P_0$, expected cash flows $E[CF_t]$, and the expected return $r$. Standard valuation uses $r$ to compute $P_0$. ICC flips it around: use observed $P_0$ and forecasted cash flows to solve for $r$. That's the implied cost of capital.
 
-Real science requires testable predictions. If markets misprice climate risk today, that should show up in returns *now*—not 25 years from now. If analyst forecasts contain information the market misses, high ICC stocks should outperform starting today. If your earnings model captures mispricing, it should predict returns out-of-sample.
+The most common implementation uses the residual income model. Start with the accounting identity that relates earnings, book value, and dividends. Substitute into the dividend discount model. Rearrange, and you get price as a function of current book value, forecasted earnings, and a discount rate. Solve for the discount rate—that's ICC.
 
-These are all testable. You can be proven wrong. That's the standard we're going to hold ourselves to.
+The interpretation depends on two premises. First, analyst forecasts represent market expectations of future cash flows. Second, prices equal fundamental value—the present value of those expected cash flows. If both hold, then ICC is the expected return required by investors, the cost of capital.
 
-## Risk vs. Mispricing: The Confusion That Drives Everything
+These are strong premises. Analyst forecasts might not match market expectations. Analysts have their own biases, information sets, and incentives. Prices might not equal fundamental value. There's noise, liquidity effects, limits to arbitrage. So ICC might not equal the true expected return.
 
-Here's the most important conceptual distinction in this course: **risk and mispricing are not the same thing**.
+But ICC still gives us an expected return measure that's forward-looking and model-based. Compare it to the alternative: estimate expected returns from historical data. That approach assumes past returns are representative of future expectations—also a strong assumption. ICC trades one set of assumptions for another.
 
-**Risk** (rewarded) means systematic exposure to factors that affect returns. In equilibrium, assets with more risk should earn higher returns. If you identify a risk factor, you should *buy* assets exposed to it (to earn the risk premium), not sell them.
+The empirical question is whether ICC works as an expected return proxy. Does it vary sensibly across firms and over time? Does it relate to realized returns the way expected returns should? Can we understand when the underlying premises are more or less likely to hold? Those questions have empirical answers.
 
-**Mispricing** means the market hasn't correctly valued future cash flows. If you identify mispricing, you should *sell* overvalued assets and *buy* undervalued assets to capture the correction.
+## ICC: What It Measures
 
-These lead to opposite investment strategies. You can't have it both ways.
+The implied cost of capital is the internal rate of return that equates current price to forecasted cash flows under a specific valuation model. You choose a model (residual income, dividend discount, abnormal earnings growth), plug in analyst forecasts, set the equation equal to observed price, and solve for the discount rate. That solution is ICC.
 
-But the industry constantly conflates them. They call everything "risk" because it sounds scientific and justifies regulation. But their recommended strategies are all about shorting or avoiding certain exposures—which only makes sense if you think those assets are overvalued.
+**Under the premises:** If analyst forecasts match market expectations and prices equal fundamental value, then ICC measures the market's expected return for that stock. It's the cost of capital—the return investors require to hold the stock given its risk.
 
-Climate is the perfect example. The industry calls it "climate risk." They show stress tests and VaR calculations. But they recommend underweighting high-carbon firms. That's a mispricing claim, not a risk claim. If climate risk were truly priced, high-carbon firms would earn higher returns (to compensate for the risk), and you'd want to overweight them.
+**When premises fail:** If forecasts don't match market expectations or prices deviate from fundamentals, ICC measures something else. It might reflect analyst biases, market sentiment, or measurement error from model misspecification. ICC is only as good as its inputs and assumptions.
 
-This confusion is not accidental. It's marketing. "Risk management" sounds respectable. "We think we're smarter than the market" does not.
+**As an expected return proxy:** ICC gives us a forward-looking return measure that updates with prices and forecasts. Compare it to historical averages, which are noisy and backward-looking. ICC might be better, or it might substitute one set of errors for another. That's an empirical question.
 
-This course will make you rigorous about the distinction. When you test a claim, you'll know whether you're testing for risk or mispricing. And you won't let people get away with muddling them together.
+**Cross-sectional variation:** If ICC works as an expected return measure, it should vary sensibly across stocks. Higher ICC for riskier firms, lower ICC for safer firms. The patterns should match what asset pricing theory predicts about required returns.
 
-## The Tools: ICC, Earnings Forecasts, and Return Tests
+**Time-series variation:** If ICC captures changes in required returns, it should move with market conditions. Higher when risk premiums are high, lower when they're low. It should relate to measures of aggregate risk or investor sentiment.
 
-We'll use three main tools to test for mispricing:
+These are testable implications. We can compute ICC, examine how it varies, and check whether the patterns make economic sense for an expected return measure.
 
-**1. Implied Cost of Capital (ICC):** This is the discount rate that makes current prices equal to forecasted cash flows. It's just an internal rate of return (IRR) calculation. But it's useful because it summarizes market expectations in a single number.
+## Validating ICC as an Expected Return Measure
 
-If the market undervalues a stock, its ICC will be high (you need a high discount rate to justify the low price given the forecasts). If the market overvalues a stock, its ICC will be low. By sorting stocks on ICC and measuring returns, you can test whether the market systematically messes up.
+If ICC measures expected returns, it should predict realized returns. Expected returns vary across stocks—some stocks are riskier and should earn higher returns. If ICC captures that variation, then stocks with high ICC should subsequently earn high returns, and stocks with low ICC should earn low returns.
 
-**2. Earnings Forecast Models:** Analysts provide earnings forecasts, but they make systematic mistakes. They're optimistic about growth stocks, slow to cut numbers, influenced by conflicts of interest. You can build statistical models using historical fundamentals that might forecast earnings better—or at least differently—than analysts.
+That's testable. Here's how:
 
-If your model predicts earnings that differ from analyst forecasts, and if the market prices in analyst forecasts more than yours, you've found potential mispricing. You can test it by forming portfolios based on your model-based ICC.
+**1. Compute ICC for each stock:** Take analyst earnings forecasts from IBES, combine them with stock prices from CRSP and balance sheet data from Compustat. Use the residual income model to compute ICC for every stock each month.
 
-**3. Portfolio Formation and Return Decomposition:** The ultimate test is returns. If you claim high ICC stocks are undervalued, form a portfolio that goes long high ICC and short low ICC. Measure returns. If you're right, you make money. If you're wrong, you lose money.
+**2. Sort stocks on ICC:** Rank stocks by their ICC and form portfolios. Deciles, quintiles, or simple high/low sorts. This creates portfolios with different ex-ante expected returns if ICC measures those expectations correctly.
 
-But don't stop there. Decompose when the returns happen. If it's mispricing, returns should concentrate at information events (earnings announcements, policy changes). If it's risk, returns should accrue steadily over time.
+**3. Measure realized returns:** Track the portfolios forward and measure their returns. If ICC is a good expected return proxy, high ICC portfolios should earn high returns, low ICC portfolios should earn low returns.
 
-## The Application: Climate Risk
+**4. Evaluate the relationship:** Does ICC predict returns? How strong is the relationship? Is it economically significant or just statistically detectable? Does it survive risk adjustments?
 
-Climate is the perfect testbed for these methods because:
+This is the standard approach for validating expected return proxies. The literature has done this extensively with ICC. The results: ICC does predict returns in the cross-section. High ICC stocks outperform low ICC stocks on average. The effect is robust across different sample periods, different ICC models, and different portfolio formation methods.
 
-**1. The claims are everywhere.** Every asset manager has a climate strategy. Every regulator talks about climate stress tests. The claims about climate mispricing are loud and persistent.
-
-**2. The claims are confused.** Nobody clearly distinguishes climate risk from climate mispricing. They use the words interchangeably. This creates opportunity for rigorous analysis.
-
-**3. The claims are mostly untestable (on purpose).** Show me a climate strategy that makes predictions about 2026 returns. You won't find many. They all project to 2050.
-
-**4. We can test it.** We have data on carbon emissions. We can compute ICC by carbon exposure. We can form portfolios. We can decompose returns around climate policy announcements. We can see if high-carbon firms actually underperform, and if so, whether it's concentrated at information events.
-
-This is the culminating application of the course. Once you know how to test climate mispricing, you can test anything. ESG, AI exposure, geopolitical risk—whatever the next story is. The method generalizes.
+But there's a puzzle. If ICC were a perfect expected return measure, and if expected returns reflected compensation for risk, then the ICC-return relationship should be explained by standard risk factors. It's not. High ICC stocks outperform even after controlling for market, size, and value factors. That suggests either ICC captures risk dimensions that standard factors miss, or the underlying premises don't fully hold.
 
 ## What You'll Actually Learn
 
 Here's the course roadmap:
 
 **Module 2-3: Understanding ICC**
-- What ICC measures (and what it doesn't)
-- Why ICC ≠ expected returns
-- The residual income model (the workhorse for computing ICC)
-- How to think about analyst forecasts and their biases
+- The residual income model and how it leads to ICC
+- The relationship between ICC and expected returns (and why they're not the same)
+- How analyst forecasts enter the calculation
+- Common ICC models and their assumptions
 
 **Module 4: Implementation**
-- Getting data (IBES, CRSP, Compustat)
-- Computing ICC numerically
-- Handling missing data, negative earnings, convergence failures
-- All the messy details the papers hide
+- Getting data from WRDS: IBES for analyst forecasts, CRSP for prices and returns, Compustat for fundamentals
+- Working with parquet files for efficient data storage and access
+- Computing ICC numerically (it's a root-finding problem)
+- Handling edge cases: missing data, negative earnings, convergence failures
+- The practical details that determine whether this works in practice
 
-**Module 5: Testing Whether ICC Predicts Returns**
-- Forming portfolios sorted on ICC
-- Measuring returns (overlapping, equal-weighted vs. value-weighted)
-- Statistical tests and economic significance
-- What the evidence actually shows
+**Module 5: Portfolio Formation and Returns**
+- Sorting stocks on ICC and forming portfolios
+- Equal-weighted vs. value-weighted returns
+- Overlapping vs. non-overlapping holding periods
+- Computing portfolio statistics and risk-adjusted returns
+- What the historical evidence shows
 
-**Module 6: Risk or Mispricing?**
-- The Rusticus (2019) test: decomposing returns over time
-- Earnings announcement vs. non-announcement returns
-- Why this distinction matters
-- What we learn about analyst forecast information
 
-**Module 7: Building Your Own Forecasts**
-- Why not just use analyst forecasts?
-- Building earnings forecast models from fundamentals
-- The Easton-Monahan (2016) approach
-- Testing whether model-based ICC predicts returns
-- Evidence on market inefficiency
+By the end, you'll have working Python code for the entire pipeline: data acquisition, ICC computation, portfolio formation, return measurement, and performance evaluation.
 
-**Module 8: Application to Climate Risk**
-- The confusion about climate risk in finance
-- Building testable hypotheses about climate mispricing
-- Computing ICC by carbon exposure
-- Testing whether high-carbon firms underperform
-- Decomposing returns around climate events
-- What the evidence actually shows (spoiler: it's mixed)
+## Technical Setup
 
-By the end, you'll have implemented all of this in Python. You'll have working code you can apply to any mispricing claim.
+We'll use modern Python tools that make working with financial data efficient and reproducible:
 
-## The Philosophy: Empiricism Over Storytelling
+**uv for package management:** We'll use `uv` to manage Python environments and dependencies. It's fast, it's simple, and it keeps your project isolated. No more dependency hell.
 
-Here's the mindset for this course:
+**Parquet files for data storage:** Financial data is large and you'll use it repeatedly. We'll store everything in parquet format—compressed columnar storage that's fast to read and write. Much better than CSV files or repeatedly hitting databases.
 
-**1. Testable predictions.** If you can't test it with data today, it's not science. Be suspicious of claims that only matter decades from now.
+**WRDS for data:** We'll get our data from Wharton Research Data Services (WRDS). You'll need access (most universities and research institutions have it). We'll pull:
+- IBES: Analyst earnings forecasts and recommendations  
+- CRSP: Stock prices, returns, and market caps
+- Compustat: Balance sheet and income statement data
 
-**2. Out-of-sample tests.** In-sample fits are meaningless. Anyone can find patterns in historical data. The test is whether it works on new data you haven't seen yet.
+The first module will walk through setting up data pipelines: connecting to WRDS, downloading what you need, converting to parquet, and organizing it so you can work efficiently. Once the data is local and in parquet format, everything runs fast.
 
-**3. Economic significance over statistical significance.** A t-statistic of 3 is nice, but if the return is 50 basis points per year, who cares? Focus on whether the magnitude matters economically.
+**Polars for data manipulation:** We'll use Polars (not pandas) for data manipulation. It's faster, more memory-efficient, and has a better API for the operations we need. If you know pandas, Polars will feel familiar but better.
 
-**4. Honest about uncertainty.** You won't always get clean answers. Returns are noisy. Models have errors. Markets change. Be honest about what you know and don't know.
-
-**5. Skeptical of industry claims.** The asset management industry has incentives to manufacture complexity and claim special insights. Most of what they sell is repackaged beta or luck. Demand evidence.
-
-**6. Build it yourself.** Don't trust black boxes. Implement the models from scratch so you understand what they actually do. This is the only way to develop real intuition.
-
-This is not a "get rich quick" course. Mispricing, if it exists, is small, time-varying, and hard to exploit profitably. Transaction costs matter. Limits to arbitrage matter. Even if you find something, it might not survive real-world trading.
-
-But that's fine. The goal is to think clearly about mispricing claims and test them rigorously. If you can do that, you're ahead of 95% of the industry.
+All code will be in Python 3.11+. We'll write clean, readable code that you can understand and modify. No clever tricks, no unnecessary abstraction—just straightforward implementations of the models and portfolio strategies.
 
 ## Prerequisites
 
 You should have:
-- **Finance background:** Understand present value, risk and return, basic asset pricing. Know what CAPM is (even if you don't believe it works).
-- **Python skills:** Can write functions, use polars or pandas, make plots. If you've done intro Python for data science, you're ready.
-- **Statistics basics:** Understand regression, hypothesis testing, standard errors. We'll run tests and you need to interpret them.
-- **Skepticism:** Don't believe everything you read in academic papers or industry reports. Question assumptions. Demand evidence.
+- **Finance basics:** Understand present value, discount rates, and what expected returns mean. Know that stock prices are supposed to equal the present value of cash flows. That's enough.
+- **Python:** Can write functions, use dataframes (pandas or polars), make plots. If you've done any data analysis in Python, you're ready.
+- **Statistics:** Understand means, standard deviations, regression. We'll compute portfolio returns and run some regressions. Nothing fancy.
 
 You don't need:
-- PhD-level math. The models are algebraically simple.
-- Experience with trading systems. We'll explain the practical details.
-- Prior knowledge of ICC. That's what we're teaching.
+- PhD-level asset pricing theory. We'll explain what we need.
+- Prior knowledge of ICC models. That's what we're teaching.
+- Experience with WRDS. We'll show you how to get the data.
+
+The course assumes you're comfortable reading and writing code. We'll provide complete implementations, but you should be able to read through a Python function and understand what it does. If you can't, go learn Python first.
 
 ## How to Use This Course
 
-Work through the modules in order. Each builds on the previous.
+Work through the modules in order. Each builds on the previous one.
 
-Don't just read—code. Download the data (we'll provide sources), implement the models, replicate the results. Then modify something and see what changes. That's how you learn.
+Actually implement the code. Don't just read. Download the data, compute ICC, form portfolios, measure returns. Then modify something—change the holding period, try different sorting rules, use different forecasts—and see what happens. That's how you learn.
 
-When something doesn't make sense, stop and figure it out. If the ICC estimate looks weird, debug it. If the portfolio loses money, understand why. The point is to develop intuition, not memorize formulas.
+When results look strange, figure out why. If ICC estimates are weird for some stocks, debug it. If portfolio returns are negative, understand whether that's a bad out-of-sample period or a sign something's wrong with the implementation. The details matter.
 
-Be skeptical. Question the assumptions. Run sensitivity tests. Ask: does this make economic sense? Would I actually trade this? What could go wrong?
+Start simple. Get the basic analyst-based ICC strategy working before adding complexity. Make sure you can replicate the basic return patterns in the literature. Then add your own extensions.
 
-And remember: most mispricing claims are wrong or overstated. That's fine. Learning to identify the rare cases where markets actually do misprice assets requires first learning to dismiss the 99% of claims that are nonsense.
+Think about economics, not just statistics. A t-statistic of 2.5 is nice, but if the return spread is 1% per year and you're trading small stocks with 50bp transaction costs, there's no money there. Focus on whether magnitudes make economic sense.
 
-## The Honest Truth
+## What to Expect
 
-Let me be blunt about what this course will and won't do.
+This course takes a measurement perspective on ICC. The goal is to understand ICC as an expected return proxy, evaluate when it works, and understand its limitations.
 
-**What you'll learn:**
-- How to test mispricing claims rigorously
-- How to implement ICC and earnings forecast models
-- How to form portfolios and measure returns properly
-- How to distinguish risk from mispricing
-- How to apply this framework to climate or any other claimed inefficiency
+**The framework:** You'll learn the valuation theory underlying ICC, how to implement different ICC models, and how to compute ICC from real data. This is about understanding the methodology, not just applying a formula.
 
-**What you won't learn:**
-- A guaranteed strategy to beat the market
-- The "secret" to picking stocks
-- How to get rich quick
+**The evidence:** We'll examine whether ICC behaves like an expected return measure should. Does it vary sensibly across firms? Does it predict realized returns? How does it compare to historical return estimates or other proxies?
 
-**What the evidence shows:**
-- Some mispricing exists, especially related to analyst forecasts and fundamentals
-- It's small (a few percent per year at most)
-- It's time-varying (works sometimes, not always)
-- It's concentrated in small, illiquid stocks where transaction costs matter
-- It might not survive real-world implementation
+**The assumptions:** Every measurement approach makes assumptions. For ICC, the key assumptions concern analyst forecasts and market prices. We'll examine those assumptions empirically and understand when they're more or less likely to hold.
 
-**What this means for you:**
-- Use these tools to evaluate claims critically
-- Don't expect magic—markets are pretty efficient
-- If you do find something, be realistic about economic significance
-- The main value is in thinking clearly, not in generating alpha
+**The applications:** ICC has been used to measure the equity risk premium, evaluate corporate investment decisions, and test asset pricing models. Understanding how ICC is constructed and what it measures is essential for interpreting this research.
 
-This is a course in empirical asset pricing. The goal is to teach you the scientific method applied to finance. Test claims. Demand evidence. Be honest about what you find.
+**The puzzles:** ICC predicts returns, but in ways that don't fully align with standard risk-based asset pricing. Is that because ICC captures risk dimensions we don't fully understand? Or because the underlying valuation premises sometimes fail? These are open questions.
 
-That's a valuable skill, whether or not you beat the market.
+This is fundamentally about measurement methodology in empirical finance. How do we estimate expected returns? What role can valuation models and analyst forecasts play? Those are important questions whether or not you ever trade an ICC-based strategy.
 
 ## Let's Get Started
 
-The next modules will walk through the framework step by step. We'll start with the theory (what is ICC? how does it relate to expected returns?), move to implementation (computing ICC from real data), then to testing (do ICC-sorted portfolios outperform?), and finally to application (testing climate mispricing claims).
+The next modules work through ICC systematically. We'll start with valuation theory: the residual income model, how it connects to expected returns, and how to derive ICC from it. Then implementation: getting data from WRDS, computing ICC numerically, handling the practical complications. Then empirical validation: do ICC estimates vary sensibly across stocks? Do they predict returns? How do they compare to alternative expected return measures?
 
-By the end, you'll have a complete toolkit for evaluating any mispricing claim empirically.
-
-Ready? Let's go.
-- **Alternative models:** Dividend discount, abnormal earnings growth, ohlson
-- **Data and implementation:** Working with analyst forecasts, financial statements, prices
-- **Cross-sectional analysis:** ICC and stock returns
-- **Portfolio strategies:** Building ICC-based portfolios
-- **Advanced topics:** Bias correction, time variation, risk management
-
-We'll move fast but thoroughly. By the end, you'll have a complete ICC toolkit and the understanding to use it intelligently.
+By the end, you'll have working code for computing ICC and a deep understanding of what it measures, what assumptions it requires, and how well it works as an expected return proxy. That's valuable knowledge for anyone doing empirical asset pricing research.
 
 Let's go.
 
