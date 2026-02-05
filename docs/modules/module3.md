@@ -24,7 +24,49 @@ Is this true in practice? Mostly. There are some exceptions (comprehensive incom
 
 Now, why do we care? Because this identity lets us rewrite the dividend discount model in terms of earnings and book values instead of dividends. Watch.
 
-### Setting Up the Data
+**Starting position:**
+- Book equity: $B_0 = \$50.00$
+- Forecasted earnings: $E_1 = \$10.00$, $E_2 = \$11.00$, $E_3 = \$12.00$
+- Payout ratio: 30% (firm pays out 30% of earnings as dividends)
+
+**Year 1:**
+- Start with book value: $B_0 = \$50.00$
+- The firm earns: $E_1 = \$10.00$
+- Dividends paid: $D_1 = 0.30 \times \$10.00 = \$3.00$
+- Retained earnings: $\$10.00 - \$3.00 = \$7.00$
+- Apply clean surplus: $B_1 = B_0 + E_1 - D_1 = \$50.00 + \$10.00 - \$3.00 = \$57.00$
+- Book value grew by exactly the retained earnings. The $7 that wasn't paid out stays in the firm, increasing equity.
+
+**Year 2:**
+- Start with book value: $B_1 = \$57.00$
+- The firm earns: $E_2 = \$11.00$
+- Dividends paid: $D_2 = 0.30 \times \$11.00 = \$3.30$
+- Retained earnings: $\$11.00 - \$3.30 = \$7.70$
+- Apply clean surplus: $B_2 = B_1 + E_2 - D_2 = \$57.00 + \$11.00 - \$3.30 = \$64.70$
+
+**Year 3:**
+- Start with book value: $B_2 = \$64.70$
+- The firm earns: $E_3 = \$12.00$
+- Dividends paid: $D_3 = 0.30 \times \$12.00 = \$3.60$
+- Retained earnings: $\$12.00 - \$3.60 = \$8.40$
+- Apply clean surplus: $B_3 = B_2 + E_3 - D_3 = \$64.70 + \$12.00 - \$3.60 = \$73.10$
+
+Book value grew by \$23.10 over three years (\$73.10 - \$50.00).
+
+Where did that come from? 
+
+From cumulative retained earnings: \$7.00 + \$7.70 + \$8.40 = \$23.10.
+
+Every dollar retained adds exactly one dollar to book equity.
+
+This is clean surplus. Earnings come in, dividends go out, and book value adjusts by the difference. No surprises, no mysterious equity changes. Everything flows through the income statement.
+
+Now here's why this matters for valuation: if you know earnings and payout policy, you can project book values mechanically. And once you have book values, you can compute residual income. The whole model follows from this one accounting identity.
+
+Book value grows with retained earnings. Nothing mysterious—just accounting.
+
+
+### Implementing Clean Surplus
 
 Before we go further, let's see what data we need. For each firm:
 - Current price `P0`
@@ -49,8 +91,6 @@ df = pl.DataFrame({
     'payout_ratio': [0.25, 0.30, 0.0],  # dividend / earnings
 })
 ```
-
-### Implementing Clean Surplus
 
 To apply the RIM, we need to project book values forward using the clean surplus relation. Here's the implementation:
 
@@ -91,16 +131,6 @@ def compute_future_book_values(
 
 Simple loop, clean logic. Now let's use this to derive the residual income formulation.
 
-Here's what the clean surplus evolution looks like for a typical firm:
-
-| Period | Book Value | Earnings | Dividends | Retained |
-|--------|-----------|----------|-----------|----------|
-| Year 0 | $50.00 | - | - | - |
-| Year 1 | $57.00 | $10.00 | $3.00 | $7.00 |
-| Year 2 | $64.70 | $11.00 | $3.30 | $7.70 |
-| Year 3 | $73.10 | $12.00 | $3.60 | $8.40 |
-
-Book value grows with retained earnings. Nothing mysterious—just accounting.
 
 
 ## From Dividends to Residual Income
@@ -427,12 +457,6 @@ But there's a counterargument: even if ROE reverts to $r$, nominal book equity g
 This is the **inflation-anchored growth** assumption, and it's what most researchers use. Claus and Thomas, for instance, use $g$ equal to the median long-run inflation forecast.
 
 Does it matter? Oh yes. If you set $g = 0$ instead of $g = 0.03$, the terminal value changes dramatically, and so does your ICC estimate. This assumption is not innocuous.
-
-Here's how sensitive ICC estimates are to the terminal growth assumption:
-
-![ICC Sensitivity to Terminal Growth](../../script/module_3/rim_icc_sensitivity_comparison.png)
-
-Higher terminal growth means you need a lower discount rate to hit the same price. GOOGL is particularly sensitive because it has high growth expectations. A 1% change in $g$ can move the ICC by 200 basis points. This is why terminal growth matters.
 
 ### Assumption 3: Book Value Is Meaningful
 
