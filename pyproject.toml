@@ -13,6 +13,7 @@ dependencies = [
     "yfinance>=1.1.0",
     "matplotlib>=3.9.4",
     "pyarrow>=21.0.0",
+    "numpy>=2.0.2",
 ]
 
 [build-system]

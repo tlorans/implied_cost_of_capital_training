@@ -91,6 +91,17 @@ def compute_future_book_values(
 
 Simple loop, clean logic. Now let's use this to derive the residual income formulation.
 
+Here's what the clean surplus evolution looks like for a typical firm:
+
+| Period | Book Value | Earnings | Dividends | Retained |
+|--------|-----------|----------|-----------|----------|
+| Year 0 | $50.00 | - | - | - |
+| Year 1 | $57.00 | $10.00 | $3.00 | $7.00 |
+| Year 2 | $64.70 | $11.00 | $3.30 | $7.70 |
+| Year 3 | $73.10 | $12.00 | $3.60 | $8.40 |
+
+Book value grows with retained earnings. Nothing mysterious—just accounting.
+
 
 ## From Dividends to Residual Income
 
@@ -156,6 +167,12 @@ def compute_residual_income(
 ```
 
 The charge `r * B_{t-1}` is the capital cost. Subtract it from earnings to get abnormal earnings.
+
+Here's how residual income behaves under different discount rate assumptions:
+
+![Residual Income Evolution](../../script/module_3/rim_residual_income_example.png)
+
+At the ICC, residual income is calibrated just right to justify the market price. Higher discount rates mean larger capital charges, so residual income is lower. Lower discount rates mean smaller charges, so residual income is higher.
 
 
 ## Why This Is Useful
@@ -247,6 +264,12 @@ def rim_price(
 ```
 
 Two pieces: present value of near-term residual income, plus a terminal value. The terminal value uses a Gordon-style perpetuity formula.
+
+The relationship between model price and discount rate is monotonic and downward-sloping:
+
+![Price vs Discount Rate](../../script/module_3/rim_general_price_sensitivity.png)
+
+This is what makes root-finding work. As the discount rate increases, the present value of everything decreases, so the model price falls. The ICC is the discount rate where the model price equals the market price.
 
 
 ## Solving for the ICC: Root-Finding Methods
@@ -379,6 +402,8 @@ def solve_rim_icc_newton(
 
 Use Brent for production code. Use Newton if you have good initial guesses and need maximum speed.
 
+## The Devil Is in the Assumptions
+
 Let's be honest: this model is only as good as its inputs. And there are three big assumptions you have to make.
 
 ### Assumption 1: Analyst Forecasts Are Reasonable
@@ -403,6 +428,12 @@ This is the **inflation-anchored growth** assumption, and it's what most researc
 
 Does it matter? Oh yes. If you set $g = 0$ instead of $g = 0.03$, the terminal value changes dramatically, and so does your ICC estimate. This assumption is not innocuous.
 
+Here's how sensitive ICC estimates are to the terminal growth assumption:
+
+![ICC Sensitivity to Terminal Growth](../../script/module_3/rim_icc_sensitivity_comparison.png)
+
+Higher terminal growth means you need a lower discount rate to hit the same price. GOOGL is particularly sensitive because it has high growth expectations. A 1% change in $g$ can move the ICC by 200 basis points. This is why terminal growth matters.
+
 ### Assumption 3: Book Value Is Meaningful
 
 The model starts with $P_0 = B_0 + \text{stuff}$. You're anchoring value to book equity. Is that reasonable?
@@ -410,6 +441,12 @@ The model starts with $P_0 = B_0 + \text{stuff}$. You're anchoring value to book
 For banks, maybe. For manufacturers, usually. For tech companies with massive intangible assets that aren't capitalized? Not so much. If book value is wildly understated because of R&D or acquired goodwill or whatever, the model is going to have a hard time.
 
 You can adjust for this—capitalize R&D, adjust for off-balance-sheet assets, etc. But each adjustment introduces noise. There's no free lunch.
+
+Where does value come from? Here's how it breaks down across different firms:
+
+![Value Decomposition](../../script/module_3/rim_value_decomposition_comparison.png)
+
+For AAPL and MSFT, a large fraction of value comes from expected future residual income—they're earning well above their cost of capital. For GOOGL with its lower P/B ratio, book value dominates. Terminal value matters for all three, which brings us back to the $g$ assumption.
 
 ## What Really Matters Here
 
@@ -578,6 +615,16 @@ def parallel_rim_icc(df: pl.DataFrame, n_workers: int = 4) -> pl.DataFrame:
     
     return pl.concat(results)
 ```
+
+Here's what typical output looks like:
+
+| Ticker | Market Price | Book Value | ICC (%) | P/B Ratio |
+|--------|--------------|------------|---------|-----------|
+| AAPL   | $150.00      | $50.00     | 8.87    | 3.00      |
+| MSFT   | $300.00      | $80.00     | 9.13    | 3.75      |
+| GOOGL  | $100.00      | $60.00     | 12.56   | 1.67      |
+
+Higher P/B ratios generally mean lower ICCs (high prices relative to book suggest lower expected returns). But it's not mechanical—earnings forecasts matter too.
 
 ## The Devil Is in the Assumptions
 
