@@ -13,60 +13,36 @@ That's worth understanding. Let's see how it works.
 The whole model rests on one accounting identity. It's called **clean surplus relation**, and it says:
 
 $$
-B_t = B_{t-1} + E_t - D_t
+B_t - B_{t-1} = E_t - D_t
 $$
 
 where $B_t$ is book equity, $E_t$ is earnings, and $D_t$ is dividends.
 
-What does this mean? Book value today equals book value yesterday, plus what you earned, minus what you paid out. Everything flows through the income statement—nothing bypasses it to go directly to equity. That's "clean surplus."
+Think about what happens to a dollar of earnings. It either gets paid out as a dividend or it gets retained. If it gets retained, it increases book equity by exactly one dollar. That's it. That's clean surplus.
 
-Is this true in practice? Mostly. There are some exceptions (comprehensive income, foreign currency adjustments), but for practical purposes, it's close enough. And it's theoretically exact if you interpret earnings the right way.
+Rearrange the clean surplus relation and you get the dynamic equation for book equity:
 
-Now, why do we care? Because this identity lets us rewrite the dividend discount model in terms of earnings and book values instead of dividends. Watch.
+$$
+B_t = B_{t-1} + E_t - D_t
+$$
 
-**Starting position:**
-- Book equity: $B_0 = \$50.00$
-- Forecasted earnings: $E_1 = \$10.00$, $E_2 = \$11.00$, $E_3 = \$12.00$
-- Payout ratio: 30% (firm pays out 30% of earnings as dividends)
+This is the same identity, just solved for $B_t$ instead of the change. Book value today equals book value yesterday plus retained earnings.
 
-**Year 1:**
-- Start with book value: $B_0 = \$50.00$
-- The firm earns: $E_1 = \$10.00$
-- Dividends paid: $D_1 = 0.30 \times \$10.00 = \$3.00$
-- Retained earnings: $\$10.00 - \$3.00 = \$7.00$
-- Apply clean surplus: $B_1 = B_0 + E_1 - D_1 = \$50.00 + \$10.00 - \$3.00 = \$57.00$
-- Book value grew by exactly the retained earnings. The $7 that wasn't paid out stays in the firm, increasing equity.
+Here's what this means for projecting book values. 
 
-**Year 2:**
-- Start with book value: $B_1 = \$57.00$
-- The firm earns: $E_2 = \$11.00$
-- Dividends paid: $D_2 = 0.30 \times \$11.00 = \$3.30$
-- Retained earnings: $\$11.00 - \$3.30 = \$7.70$
-- Apply clean surplus: $B_2 = B_1 + E_2 - D_2 = \$57.00 + \$11.00 - \$3.30 = \$64.70$
+Start with $B_0 = \$50$. The firm earns $E_1 = \$10$ and pays out 30%, so dividends are $D_1 = \$3$. The remaining $\$7$ gets retained, so $B_1 = \$50 + \$7 = \$57$.
 
-**Year 3:**
-- Start with book value: $B_2 = \$64.70$
-- The firm earns: $E_3 = \$12.00$
-- Dividends paid: $D_3 = 0.30 \times \$12.00 = \$3.60$
-- Retained earnings: $\$12.00 - \$3.60 = \$8.40$
-- Apply clean surplus: $B_3 = B_2 + E_3 - D_3 = \$64.70 + \$12.00 - \$3.60 = \$73.10$
+Next year: earns $E_2 = \$11$, pays $D_2 = \$3.30$, retains $\$7.70$. 
 
-Book value grew by \$23.10 over three years (\$73.10 - \$50.00).
+Book value: $B_2 = \$57 + \$7.70 = \$64.70$.
 
-Where did that come from? 
+After three years of retaining 70% of earnings, book equity has grown from $\$50$ to $\$73.10$. 
 
-From cumulative retained earnings: \$7.00 + \$7.70 + \$8.40 = \$23.10.
+Where did that $\$23.10$ come from? 
 
-Every dollar retained adds exactly one dollar to book equity.
+From cumulative retained earnings. Not from asset revaluations. Not from capital injections. Just from earnings that weren't paid out.
 
-This is clean surplus. Earnings come in, dividends go out, and book value adjusts by the difference. No surprises, no mysterious equity changes. Everything flows through the income statement.
-
-Now here's why this matters for valuation: if you know earnings and payout policy, you can project book values mechanically. And once you have book values, you can compute residual income. The whole model follows from this one accounting identity.
-
-Book value grows with retained earnings. Nothing mysterious—just accounting.
-
-
-### Implementing Clean Surplus
+Now, why do we care? Because this identity lets us rewrite the dividend discount model in terms of earnings and book values instead of dividends. This is the key to the residual income model that we will see in a moment.
 
 Before we go further, let's see what data we need. For each firm:
 - Current price `P0`
@@ -75,7 +51,7 @@ Before we go further, let's see what data we need. For each firm:
 - Payout ratios or dividends
 - Terminal growth rate `g`
 
-In Python with Polars:
+In Python with ``polars``, we can set up a DataFrame like this:
 
 ```python
 import polars as pl
@@ -91,8 +67,7 @@ df = pl.DataFrame({
     'payout_ratio': [0.25, 0.30, 0.0],  # dividend / earnings
 })
 ```
-
-To apply the RIM, we need to project book values forward using the clean surplus relation. Here's the implementation:
+To project book values forward using the clean surplus relation:
 
 ```python
 def compute_future_book_values(
@@ -155,9 +130,23 @@ $$
 
 What's going on here? Residual income is earnings minus a charge for the book equity employed. It's the earnings left over after paying investors for their capital. If the firm earns exactly the cost of capital on book equity, residual income is zero and the stock is worth book value. If it earns more, residual income is positive and the stock trades at a premium to book.
 
-This is just accounting manipulation—no new economics. But it changes everything about how we implement the model.
+To see this, take a firm with book value $B_0 = \$100$ that earns $E_1 = \$15$ next year. Cost of capital is $r = 10\%$.
 
-### Computing Residual Income in Code
+The capital charge is $r \cdot B_0 = 0.10 \times \$100 = \$10$. This is what investors *require* the firm to earn just to justify the book value.
+
+The firm actually earns $\$15$. So residual income is:
+
+$$
+RI_1 = E_1 - r \cdot B_0 = \$15 - \$10 = \$5
+$$
+
+The firm earns $\$5$ more than required. That $\$5$ of abnormal earnings adds value above book. If you believe this persists, the stock should trade above $\$100$.
+
+Now suppose the firm earns exactly $\$10$. Then $RI_1 = \$10 - \$10 = \$0$. No abnormal earnings. The stock is worth exactly book value.
+
+If the firm earns only $\$8$, then $RI_1 = \$8 - \$10 = -\$2$. Negative residual income. The firm is destroying value. The stock should trade below book.
+
+It decomposes into book value plus the present value of abnormal earnings. You're not valuing the total earnings stream—you're valuing earnings *relative to what book equity should earn*.
 
 Given book values, earnings, and a trial discount rate $r$, computing residual income is straightforward:
 
@@ -466,15 +455,9 @@ For banks, maybe. For manufacturers, usually. For tech companies with massive in
 
 You can adjust for this—capitalize R&D, adjust for off-balance-sheet assets, etc. But each adjustment introduces noise. There's no free lunch.
 
-Where does value come from? Here's how it breaks down across different firms:
+### What Really Matters
 
-![Value Decomposition](../../script/module_3/rim_value_decomposition_comparison.png)
-
-For AAPL and MSFT, a large fraction of value comes from expected future residual income—they're earning well above their cost of capital. For GOOGL with its lower P/B ratio, book value dominates. Terminal value matters for all three, which brings us back to the $g$ assumption.
-
-## What Really Matters Here
-
-I want to emphasize something. The math is trivial. The accounting manipulations are clever but mechanical. What matters—what determines whether your ICC estimate is useful—is the quality of your assumptions.
+The math is trivial. The accounting manipulations are clever but mechanical. What matters—what determines whether your ICC estimate is useful—is the quality of your assumptions.
 
 Are the analyst forecasts reasonable? Is the terminal growth rate sensible? Is book value a meaningful anchor? Get these wrong and your ICC is nonsense, no matter how many decimal places you report.
 
